@@ -39,7 +39,7 @@ by adding `build_release` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:build_release, "~> 0.1.0"}
+    {:build_release, "~> 0.1.0", only: [:dev]}
   ]
 end
 ```
