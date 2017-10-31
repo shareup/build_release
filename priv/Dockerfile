@@ -36,9 +36,11 @@ WORKDIR /app
 
 RUN mix phx.digest
 
-COPY rel /app/rel/
 COPY priv /app/priv/
 COPY lib /app/lib/
 
 RUN mix compile
+
+COPY rel /app/rel/
+
 RUN mix release --env=prod
