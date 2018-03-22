@@ -3,7 +3,7 @@ defmodule Mix.Tasks.Build.Release do
 
   @shortdoc "build a tar.gz release in a container and then copy into the current directory"
 
-  def run(_args) do
+  def run(args) do
     {app, version} = app_and_version()
     tag = "#{app}:#{version}"
     name = "#{app}_#{version}"
@@ -15,12 +15,12 @@ defmodule Mix.Tasks.Build.Release do
       :ok <- cmd("docker container run -dit --rm --name #{name} #{tag}"),
       :ok <- cmd("docker cp #{name}:/app/_build/prod/rel/#{app}/releases/#{version}/#{app}.tar.gz ./#{file}")
     do
-      cleanup(tag, name)
+      cleanup(tag, name, args)
       Mix.shell.info("\n\nCopied file #{file} to .")
     else
       {:error, code} ->
         Mix.shell.error("\n\nDocker command failed (#{code}). Trying to cleanup...\n\n")
-        cleanup(tag, name)
+        cleanup(tag, name, args)
     end
   end
 
@@ -34,10 +34,13 @@ defmodule Mix.Tasks.Build.Release do
     end
   end
 
-  defp cleanup(tag, name) do
+  defp cleanup(tag, name, args) do
     cmd("docker container stop #{name}")
     cmd("docker container rm #{name}")
-    cmd("docker image rm #{tag}")
+    
+    if Enum.member?(args, "--cleanup-image") do
+      cmd("docker image rm #{tag}")
+    end
   end
 
   @spec cmd(String.t, keyword) :: :ok | {:error, integer}
