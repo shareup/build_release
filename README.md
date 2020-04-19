@@ -1,23 +1,23 @@
 # Build Release builds a release tar through a docker container
 
-A Dockerfile combined with a mix task to build a distillery release in the
-linux container and then copy it to the project's path.
+A Dockerfile combined with a mix task to build a release in a linux container
+and then copy it out to the project's path on the host machine.
 
-If you, like me, work on a mac then the release you just created isn't
-that useful. I want to run my apps on linux. So, it's not that big a
-deal to build the release inside a linux docker container and then
-copy the tar.gz out.  This also means builds are very repeatable and
-always created in the same environment and I guess that is good too.
+If you, like me, work on a mac then the release created on the mac isn't useful
+for production: I want to run my apps on linux. This library will build the
+release inside a linux docker container and then copy the tar.gz out.  This
+also means builds are very repeatable and always created in the same
+environment and I guess that is good too.
 
 ## Usage
 
-First, make sure you can build a relase with distillery:
+First, make sure you can build a release:
 
 ```sh
-$ mix release --env prod
+$ mix release
 ```
 
-If that works then your project can be built. So:
+If that works then you should be able to:
 
 ```sh
 $ mix build.release
@@ -25,7 +25,8 @@ $ mix build.release
 
 That's it.
 
-A Dockerfile is provided for you.
+A [Dockerfile is provided for you](/priv/Dockerfile). You can provide your own
+Dockerfile at the root of your project if you need custom build steps.
 
 ## Installation
 
@@ -39,13 +40,7 @@ by adding `build_release` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:build_release, "~> 0.1.0", only: [:dev]}
+    {:build_release, "~> 0.2.0", only: [:dev]}
   ]
 end
 ```
-
-**Note: this package does not depend on distillery so you need to also have that listed in your deps.**
-
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/build_release](https://hexdocs.pm/build_release).
