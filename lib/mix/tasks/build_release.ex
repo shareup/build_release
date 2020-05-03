@@ -13,12 +13,7 @@ defmodule Mix.Tasks.Build.Release do
 
     with :ok <- cmd("docker image build -t #{tag} ."),
          :ok <- cmd("docker container run -dit --rm --name #{name} #{tag}"),
-         :ok <-
-           cmd(
-             "docker cp #{name}:/app/_build/prod/rel/#{app}/releases/#{version}/#{app}.tar.gz ./#{
-               file
-             }"
-           ) do
+         :ok <- cmd("docker cp #{name}:/release.tar.gz ./#{file}") do
       cleanup(tag, name, args)
       Mix.shell().info("\n\nCopied file #{file} to .")
     else
