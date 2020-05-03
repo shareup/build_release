@@ -14,7 +14,7 @@ environment and I guess that is good too.
 First, make sure you can build a release:
 
 ```sh
-$ mix release
+$ MIX_ENV=prod mix release
 ```
 
 If that works then you should be able to:
