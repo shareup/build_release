@@ -26,7 +26,7 @@ Then, you should be able to:
 $ mix build.release
 ```
 
-You will now have a `.tar` in your current directory of the release built from inside the container.
+You will now have a `.tar` in your current directory of the release built from inside the container. If you `tar -xf` then the can by started with: `:app_name/bin/:app_name start`
 
 ## Installation
 
@@ -93,7 +93,7 @@ COPY lib /app/lib/
 RUN mix compile
 RUN mix release
 
-RUN tar -zcf /release.tar.gz /app/_build/prod/rel/
+RUN tar -zcf /release.tar.gz -C /app/_build/prod/rel/ .
 ```
 
 ### Ubuntu
@@ -195,7 +195,7 @@ COPY lib /app/lib/
 RUN mix compile
 RUN mix release
 
-RUN tar -zcf /release.tar.gz /app/_build/prod/rel/
+RUN tar -zcf /release.tar.gz -C /app/_build/prod/rel/ .
 
 CMD /bin/bash
 ```
