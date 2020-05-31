@@ -4,12 +4,18 @@ defmodule Mix.Tasks.Build.Release do
   @shortdoc "build a tar.gz release in a container and then copy into the current directory"
 
   def run(args) do
+    unless File.exists?("./Dockerfile") do
+      Mix.shell().error(
+        "No Dockerfile found, please create one before using mix build.release. You can find examples in the README at https://github.com/shareup/build_release#readme"
+      )
+
+      Kernel.exit({:shutdown, 1})
+    end
+
     {app, version} = app_and_version()
     tag = "#{app}:#{version}"
     name = "#{app}_#{version}"
     file = "#{name}.tar.gz"
-
-    copy_dockerfile()
 
     with :ok <- cmd("docker image build -t #{tag} ."),
          :ok <- cmd("docker container run -dit --rm --name #{name} #{tag}"),
@@ -20,16 +26,6 @@ defmodule Mix.Tasks.Build.Release do
       {:error, code} ->
         Mix.shell().error("\n\nDocker command failed (#{code}). Trying to cleanup...\n\n")
         cleanup(tag, name, args)
-    end
-  end
-
-  defp dockerfile_path,
-    do: Application.app_dir(:build_release, ["priv", "Dockerfile"])
-
-  defp copy_dockerfile do
-    unless File.exists?("./Dockerfile") do
-      File.cp(dockerfile_path(), "./Dockerfile")
-      Mix.shell().info("Created Dockerfile. Please add this to your version control.\n\n")
     end
   end
 
