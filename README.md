@@ -23,7 +23,7 @@ examples for [ubuntu](#ubuntu) and [debian](#debian) below.
 Then, you should be able to:
 
 ```sh
-$ mix build.release
+$ mix release.build
 ```
 
 You will now have a `.tar` in your current directory of the release built from inside the container. If you `tar -xf` then the can by started with: `bin/:app_name start`
