@@ -1,4 +1,4 @@
-# Build Release builds a release tar through a docker container
+# ReleaseBuild is a mix task which builds a release tar through a docker container
 
 A mix task to build a release in a linux container and then copy it out to the
 project's path on the host machine.
@@ -26,20 +26,32 @@ Then, you should be able to:
 $ mix build.release
 ```
 
-You will now have a `.tar` in your current directory of the release built from inside the container. If you `tar -xf` then the can by started with: `:app_name/bin/:app_name start`
+You will now have a `.tar` in your current directory of the release built from inside the container. If you `tar -xf` then the can by started with: `bin/:app_name start`
+
+### Build Args
+
+If you need to set ENV vars or have some dynamic varialbes in your build, then you can specify many `--build-arg` flags which will be forwarded to the `docker image build` command. If you want you can even automate these in your `mix.exs` file with an alias:
+
+```ex
+defp aliases do
+  [
+    "release.build": ["release.build --build-arg foo=#{calculate_foo()} --build-arg bar=abc"]
+  ]
+end
+```
 
 ## Installation
 
 Make sure you have docker running. If you can `docker ps` then you are good.
 Docker for Mac/Windows is a good app if you are starting from zero.
 
-The package can be installed by adding `build_release` to your list of
+The package can be installed by adding `release_build` to your list of
 dependencies in `mix.exs`:
 
 ```elixir
 def deps do
   [
-    {:build_release, "~> 0.3.0", only: [:dev]}
+    {:release_build, "~> 0.4.0", only: [:dev]}
   ]
 end
 ```

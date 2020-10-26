@@ -1,4 +1,4 @@
-defmodule Mix.Tasks.Build.Release do
+defmodule Mix.Tasks.Release.Build do
   use Mix.Task
 
   @shortdoc "build a tar.gz release in a container and then copy into the current directory"
@@ -6,18 +6,25 @@ defmodule Mix.Tasks.Build.Release do
   def run(args) do
     unless File.exists?("./Dockerfile") do
       Mix.shell().error(
-        "No Dockerfile found, please create one before using mix build.release. You can find examples in the README at https://github.com/shareup/build_release#readme"
+        "No Dockerfile found, please create one before using mix release.build. You can find examples in the README at https://github.com/shareup/release_build#readme"
       )
 
       Kernel.exit({:shutdown, 1})
     end
+
+    {parsed, _, _} = OptionParser.parse(args, strict: [build_arg: :keep])
+
+    build_args =
+      Keyword.get_values(parsed, :build_arg)
+      |> Enum.map(&"--build-arg #{&1}")
+      |> Enum.join(" ")
 
     {app, version} = app_and_version()
     tag = "#{app}:#{version}"
     name = "#{app}_#{version}"
     file = "#{name}.tar.gz"
 
-    with :ok <- cmd("docker image build -t #{tag} ."),
+    with :ok <- cmd("docker image build #{build_args} -t #{tag} ."),
          :ok <- cmd("docker container run -dit --rm --name #{name} #{tag}"),
          :ok <- cmd("docker cp #{name}:/release.tar.gz ./#{file}") do
       cleanup(tag, name, args)
