@@ -1,13 +1,13 @@
-defmodule BuildRelease.Mixfile do
+defmodule ReleaseBuild.Mixfile do
   use Mix.Project
 
   def project do
     [
-      app: :build_release,
+      app: :release_build,
       description: "Build elixir release tar from inside a docker container",
-      source_url: "https://github.com/shareup/build_release",
-      homepage_url: "https://github.com/shareup/build_relase#readme",
-      version: "0.2.0",
+      source_url: "https://github.com/shareup/release_build",
+      homepage_url: "https://github.com/shareup/release_build#readme",
+      version: "0.4.0",
       elixir: "~> 1.9",
       package: package(),
       start_permanent: Mix.env() == :prod,
@@ -31,7 +31,7 @@ defmodule BuildRelease.Mixfile do
     [
       licenses: ["MIT"],
       links: %{
-        "GitHub" => "https://github.com/shareup/build_release"
+        "GitHub" => "https://github.com/shareup/release_build"
       }
     ]
   end
