@@ -61,10 +61,15 @@ defmodule Mix.Tasks.Release.Build do
   defp app_and_version(project) do
     with {:ok, app} <- Keyword.fetch(project, :app),
          {:ok, version} <- Keyword.fetch(project, :version) do
-      {app, version}
+      {app, sanitize_version(version)}
     else
       :error ->
         raise "Could not determine the app and/or version of this project"
     end
   end
+
+  # NOTE: build information can be part of a version after a + for elixir, but
+  # docker doens't like a + in an image's name
+  defp sanitize_version(version),
+    do: String.replace(version, ~r[\+], "-")
 end
