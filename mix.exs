@@ -7,7 +7,7 @@ defmodule ReleaseBuild.Mixfile do
       description: "Build elixir release tar from inside a docker container",
       source_url: "https://github.com/shareup/release_build",
       homepage_url: "https://github.com/shareup/release_build#readme",
-      version: "0.4.0",
+      version: "0.5.0",
       elixir: "~> 1.9",
       package: package(),
       start_permanent: Mix.env() == :prod,
