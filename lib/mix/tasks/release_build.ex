@@ -24,32 +24,50 @@ defmodule Mix.Tasks.Release.Build do
     name = "#{app}_#{version}"
     file = "#{name}.tar.gz"
 
-    with :ok <- cmd("docker image build #{build_args} -t #{tag} ."),
-         :ok <- cmd("docker container run -dit --rm --name #{name} #{tag}"),
-         :ok <- cmd("docker cp #{name}:/release.tar.gz ./#{file}") do
+    try do
+      cmd!("docker buildx build #{build_args} --platform linux/amd64 -t #{tag} .")
+      cmd!("docker container run -dit --rm --name #{name} #{tag}")
+      cmd!("docker cp #{name}:/release.tar.gz ./#{file}")
+      Mix.shell().info("\nCopied file #{file} to .")
+    rescue
+      e in RuntimeError ->
+        Mix.shell().error(e.message)
+        Kernel.exit({:shutdown, 1})
+    after
       cleanup(tag, name, args)
-      Mix.shell().info("\n\nCopied file #{file} to .")
-    else
-      {:error, code} ->
-        Mix.shell().error("\n\nDocker command failed (#{code}). Trying to cleanup...\n\n")
-        cleanup(tag, name, args)
     end
   end
 
+  # TODO: have a verbose mode where we shoe if cleanup failed or not
   defp cleanup(tag, name, args) do
-    cmd("docker container stop #{name}")
-    cmd("docker container rm #{name}")
+    cmd("docker container stop #{name}", quiet: true)
+    cmd("docker container rm #{name}", quiet: true)
 
     if Enum.member?(args, "--cleanup-image") do
-      cmd("docker image rm #{tag}")
+      cmd("docker image rm #{tag}", quiet: true)
     end
+
+    :ok
   end
 
   @spec cmd(String.t(), keyword) :: :ok | {:error, integer}
-  defp cmd(string, opts \\ []) do
+  defp cmd(string, opts) do
+    Mix.shell().info(">>> #{string}")
+
     case Mix.shell().cmd(string, opts) do
       0 -> :ok
       code -> {:error, code}
+    end
+  end
+
+  @spec cmd!(String.t(), keyword) :: :ok
+  defp cmd!(string, opts \\ []) do
+    case cmd(string, opts) do
+      :ok ->
+        :ok
+
+      {:error, code} ->
+        raise "shell exited with non-zero status: #{code}"
     end
   end
 
