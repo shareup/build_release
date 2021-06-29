@@ -38,27 +38,20 @@ defmodule Mix.Tasks.Release.Build do
     end
   end
 
+  # TODO: have a verbose mode where we shoe if cleanup failed or not
   defp cleanup(tag, name, args) do
-    with :ok <- cmd("docker container stop #{name}", quiet: true),
-         :ok <- cmd("docker container rm #{name}", quiet: true),
-         :ok <- cleanup_image(tag, args) do
-      :ok
-    else
-      {:error, code} ->
-        Mix.shell().error("cleanup failed (#{code})")
-    end
-  end
+    cmd("docker container stop #{name}", quiet: true)
+    cmd("docker container rm #{name}", quiet: true)
 
-  defp cleanup_image(tag, args) do
     if Enum.member?(args, "--cleanup-image") do
       cmd("docker image rm #{tag}", quiet: true)
-    else
-      :ok
     end
+
+    :ok
   end
 
   @spec cmd(String.t(), keyword) :: :ok | {:error, integer}
-  defp cmd(string, opts \\ []) do
+  defp cmd(string, opts) do
     Mix.shell().info(">>> #{string}\n")
 
     case Mix.shell().cmd(string, opts) do
