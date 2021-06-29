@@ -25,7 +25,7 @@ defmodule Mix.Tasks.Release.Build do
     file = "#{name}.tar.gz"
 
     try do
-      cmd!("docker image build #{build_args} --platform linux/amd64 -t #{tag} .")
+      cmd!("docker buildx build #{build_args} --platform linux/amd64 -t #{tag} .")
       cmd!("docker container run -dit --rm --name #{name} #{tag}")
       cmd!("docker cp #{name}:/release.tar.gz ./#{file}")
       Mix.shell().info("\nCopied file #{file} to .")
@@ -52,7 +52,7 @@ defmodule Mix.Tasks.Release.Build do
 
   @spec cmd(String.t(), keyword) :: :ok | {:error, integer}
   defp cmd(string, opts) do
-    Mix.shell().info(">>> #{string}\n")
+    Mix.shell().info(">>> #{string}")
 
     case Mix.shell().cmd(string, opts) do
       0 -> :ok
