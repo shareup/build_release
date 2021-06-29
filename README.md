@@ -26,11 +26,16 @@ Then, you should be able to:
 $ mix release.build
 ```
 
-You will now have a `.tar` in your current directory of the release built from inside the container. If you `tar -xf` then the can by started with: `bin/:app_name start`
+You will now have a `.tar` in your current directory of the release built from
+inside the container. If you `tar -xf` then the can by started with:
+`bin/:app_name start`
 
 ### Build Args
 
-If you need to set ENV vars or have some dynamic varialbes in your build, then you can specify many `--build-arg` flags which will be forwarded to the `docker image build` command. If you want you can even automate these in your `mix.exs` file with an alias:
+If you need to set ENV vars or have some dynamic varialbes in your build, then
+you can specify many `--build-arg` flags which will be forwarded to the `docker
+image build` command. If you want you can even automate these in your `mix.exs`
+file with an alias:
 
 ```ex
 defp aliases do
